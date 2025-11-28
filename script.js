@@ -2,12 +2,19 @@ let gameMode = null;
 let aiLevel = 1;
 let game = new Chess();
 let selectedSquare = null;
-let pendingPromotion = null; // { from, to }
+let pendingPromotion = null;
 
-const pieceToEmoji = {
-  'k': '♚', 'q': '♛', 'r': '♜', 'b': '♝', 'n': '♞', 'p': '♟',
-  'K': '♔', 'Q': '♕', 'R': '♖', 'B': '♗', 'N': '♘', 'P': '♙'
-};
+// Правильная маппинг-функция
+function getPieceSymbol(pieceObj) {
+  if (!pieceObj) return null;
+  const letter = pieceObj.type; // 'p', 'k', 'q' и т.д.
+  const upper = pieceObj.color === 'w' ? letter.toUpperCase() : letter.toLowerCase();
+  const mapping = {
+    'k': '♚', 'q': '♛', 'r': '♜', 'b': '♝', 'n': '♞', 'p': '♟',
+    'K': '♔', 'Q': '♕', 'R': '♖', 'B': '♗', 'N': '♘', 'P': '♙'
+  };
+  return mapping[upper] || null;
+}
 
 // === Обработчики кнопок ===
 document.getElementById('localBtn').addEventListener('click', () => {
@@ -37,12 +44,11 @@ document.getElementById('restartBtn').addEventListener('click', () => {
   resetGame();
 });
 
-// === Выбор превращения ===
+// === Превращение ===
 document.querySelectorAll('.promo-piece').forEach(el => {
   el.addEventListener('click', () => {
     const piece = el.dataset.piece;
     if (pendingPromotion) {
-      // Выполняем ход с превращением
       game.move({
         from: pendingPromotion.from,
         to: pendingPromotion.to,
@@ -54,7 +60,6 @@ document.querySelectorAll('.promo-piece').forEach(el => {
       updateStatus();
       renderBoard();
 
-      // Ход ИИ после превращения?
       if (gameMode === 'ai' && game.turn() === 'b' && !game.game_over()) {
         setTimeout(makeAIMove, 400);
       }
@@ -92,45 +97,10 @@ function updateStatus() {
   }
 }
 
-function squareToCoord(square) {
-  const col = square.charCodeAt(0) - 'a'.charCodeAt(0);
-  const row = 8 - parseInt(square[1]);
-  return [row, col];
-}
-
 function coordToSquare(row, col) {
   const file = String.fromCharCode('a'.charCodeAt(0) + col);
   const rank = 8 - row;
   return file + rank;
-}
-
-// Анимация перемещения
-function animateMove(fromSquare, toSquare) {
-  const boardEl = document.getElementById('board');
-  const fromCell = boardEl.querySelector(`.cell[data-square="${fromSquare}"]`);
-  const toCell = boardEl.querySelector(`.cell[data-square="${toSquare}"]`);
-
-  if (!fromCell || !toCell) return;
-
-  const piece = fromCell.textContent;
-  const pieceEl = document.createElement('div');
-  pieceEl.className = 'piece-animate';
-  pieceEl.textContent = piece;
-  pieceEl.style.left = fromCell.offsetLeft + 'px';
-  pieceEl.style.top = fromCell.offsetTop + 'px';
-
-  document.body.appendChild(pieceEl);
-
-  // Запуск анимации
-  setTimeout(() => {
-    pieceEl.style.transform = `translate(${toCell.offsetLeft - fromCell.offsetLeft}px, ${toCell.offsetTop - fromCell.offsetTop}px)`;
-    pieceEl.style.opacity = '0';
-  }, 10);
-
-  // Удалить после анимации
-  setTimeout(() => {
-    document.body.removeChild(pieceEl);
-  }, 350);
 }
 
 function renderBoard() {
@@ -146,10 +116,10 @@ function renderBoard() {
       cell.className = `cell ${(row + col) % 2 === 0 ? 'light' : 'dark'}`;
       cell.dataset.square = square;
 
-      const piece = game.get(square);
-      if (piece) {
-        const key = piece.color === 'w' ? piece.type.toUpperCase() : piece.type.toLowerCase();
-        cell.textContent = pieceToEmoji[key];
+      const pieceObj = game.get(square);
+      const symbol = getPieceSymbol(pieceObj);
+      if (symbol) {
+        cell.textContent = symbol;
       }
 
       if (selectedSquare === square) {
@@ -167,17 +137,15 @@ function renderBoard() {
 }
 
 function handleCellClick(square) {
-  if (pendingPromotion) return; // ждём выбор фигуры
+  if (pendingPromotion) return;
 
-  const piece = game.get(square);
+  const pieceObj = game.get(square);
 
   if (selectedSquare) {
-    // Проверим, не превращение ли это
     const moves = game.moves({ square: selectedSquare, verbose: true });
     const targetMove = moves.find(m => m.to === square && m.promotion);
 
     if (targetMove) {
-      // Запоминаем ход и показываем модалку
       pendingPromotion = { from: selectedSquare, to: square };
       document.getElementById('promotionModal').style.display = 'flex';
       selectedSquare = null;
@@ -185,14 +153,12 @@ function handleCellClick(square) {
       return;
     }
 
-    // Обычный ход
     const move = game.move({
       from: selectedSquare,
       to: square
     });
 
     if (move) {
-      // Анимация только в локальном режиме
       if (gameMode === 'local') {
         animateMove(selectedSquare, square);
       }
@@ -204,7 +170,7 @@ function handleCellClick(square) {
         setTimeout(makeAIMove, 400);
       }
     } else {
-      if (piece && piece.color === game.turn()) {
+      if (pieceObj && pieceObj.color === game.turn()) {
         selectedSquare = square;
         renderBoard();
       } else {
@@ -213,21 +179,51 @@ function handleCellClick(square) {
       }
     }
   } else {
-    if (piece && piece.color === game.turn()) {
+    if (pieceObj && pieceObj.color === game.turn()) {
       selectedSquare = square;
       renderBoard();
     }
   }
 }
 
+function animateMove(fromSquare, toSquare) {
+  const boardEl = document.getElementById('board');
+  const fromCell = boardEl.querySelector(`.cell[data-square="${fromSquare}"]`);
+  const toCell = boardEl.querySelector(`.cell[data-square="${toSquare}"]`);
+
+  if (!fromCell || !toCell) return;
+
+  const piece = fromCell.textContent;
+  if (!piece) return;
+
+  const pieceEl = document.createElement('div');
+  pieceEl.className = 'piece-animate';
+  pieceEl.textContent = piece;
+  pieceEl.style.left = fromCell.offsetLeft + 'px';
+  pieceEl.style.top = fromCell.offsetTop + 'px';
+  pieceEl.style.fontSize = getComputedStyle(fromCell).fontSize;
+  pieceEl.style.fontWeight = '700';
+
+  document.body.appendChild(pieceEl);
+
+  setTimeout(() => {
+    pieceEl.style.transform = `translate(${toCell.offsetLeft - fromCell.offsetLeft}px, ${toCell.offsetTop - fromCell.offsetTop}px)`;
+    pieceEl.style.opacity = '0';
+  }, 10);
+
+  setTimeout(() => {
+    if (pieceEl.parentNode) {
+      pieceEl.parentNode.removeChild(pieceEl);
+    }
+  }, 350);
+}
+
 function makeAIMove() {
   const moves = game.moves({ verbose: true });
   if (moves.length === 0) return;
 
-  // Простой ИИ: выбирает случайный ход
   const move = moves[Math.floor(Math.random() * moves.length)];
 
-  // Если превращение — выбираем ферзя
   game.move({
     from: move.from,
     to: move.to,
