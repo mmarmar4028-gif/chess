@@ -4,8 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Шахматы</title>
-  <!-- Шрифт с улучшенной читаемостью шахматных символов -->
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Symbols:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chess.js@0.10.3/chess.min.js"></script>
 </head>
@@ -17,7 +15,6 @@
     <button id="aiBtn" class="btn">Игра с ИИ</button>
   </div>
 
-  <!-- Выбор сложности -->
   <div id="aiMenu" class="screen" style="display: none;">
     <h2>Сложность ИИ</h2>
     <button class="btn" data-level="1">Лёгкий</button>
@@ -26,7 +23,6 @@
     <button id="backBtn" class="btn-back">← Назад</button>
   </div>
 
-  <!-- Игровой экран -->
   <div id="game" class="screen" style="display: none;">
     <div id="status">Ход белых</div>
     <div id="board-container">
@@ -35,15 +31,14 @@
     <button id="restartBtn" class="btn-restart">🔄 Новая игра</button>
   </div>
 
-  <!-- Модальное окно превращения -->
   <div id="promotionModal" class="modal" style="display: none;">
     <div class="modal-content">
       <p>Выберите фигуру:</p>
       <div class="promotion-options">
-        <div class="promo-piece" data-piece="q">♕</div>
-        <div class="promo-piece" data-piece="r">♖</div>
-        <div class="promo-piece" data-piece="b">♗</div>
-        <div class="promo-piece" data-piece="n">♘</div>
+        <div class="promo-piece" data-piece="q">♛</div>
+        <div class="promo-piece" data-piece="r">♜</div>
+        <div class="promo-piece" data-piece="b">♝</div>
+        <div class="promo-piece" data-piece="n">♞</div>
       </div>
     </div>
   </div>
