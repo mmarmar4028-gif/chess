@@ -2,7 +2,8 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Noto Sans Symbols', system-ui, sans-serif;
+  /* Системные шрифты с поддержкой шахматных символов */
+  font-family: "Segoe UI Symbol", "Symbola", "Apple Symbols", "Noto Color Emoji", sans-serif;
 }
 
 body {
@@ -13,7 +14,6 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  perspective: 800px;
 }
 
 .screen {
@@ -37,7 +37,7 @@ h1, h2 {
   min-height: 24px;
 }
 
-.btn, .btn-back, .btn-restart {
+.btn {
   display: block;
   width: 100%;
   padding: 14px;
@@ -46,13 +46,10 @@ h1, h2 {
   border-radius: 10px;
   font-size: 17px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  font-weight: 600;
-}
-
-.btn {
   background-color: #f44336;
   color: white;
+  font-weight: 600;
+  transition: all 0.2s;
 }
 
 .btn:hover {
@@ -66,9 +63,12 @@ h1, h2 {
   color: #d32f2f;
   text-decoration: underline;
   font-weight: 500;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  font-size: 16px;
 }
 
-/* 3D-эффект доски */
 #board-container {
   perspective: 1000px;
   margin: 0 auto 16px;
@@ -84,22 +84,23 @@ h1, h2 {
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
-  transform-style: preserve-3d;
-  transform: rotateX(5deg); /* лёгкий 3D-наклон */
-  background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
+  transform: rotateX(5deg);
+  background: #f0f0f0;
 }
 
 .cell {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 34px;
-  font-weight: 700;
+  font-size: 36px;
+  font-weight: bold;
   cursor: pointer;
   user-select: none;
   position: relative;
-  transition: background 0.2s ease;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  transition: background 0.2s;
+  /* Убираем размытость */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .cell.light { background-color: #fdfdfd; }
@@ -111,7 +112,6 @@ h1, h2 {
 }
 
 .cell.valid-move {
-  position: relative;
   background-color: rgba(244, 67, 54, 0.15);
 }
 
@@ -125,18 +125,16 @@ h1, h2 {
   opacity: 0.6;
 }
 
-/* Анимация фигуры */
 .piece-animate {
   position: absolute;
-  font-size: 34px !important;
-  font-weight: 700 !important;
+  font-size: 36px !important;
+  font-weight: bold !important;
   pointer-events: none;
   z-index: 10;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-  transition: transform 0.3s ease, opacity 0.3s ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Модальное окно превращения */
 .modal {
   position: fixed;
   top: 0;
@@ -179,12 +177,11 @@ h1, h2 {
   align-items: center;
   justify-content: center;
   font-size: 40px;
-  font-weight: 700;
+  font-weight: bold;
   border-radius: 12px;
   background: #f9f9f9;
   cursor: pointer;
   transition: transform 0.15s, background 0.2s;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
 }
 
 .promo-piece:hover {
@@ -193,7 +190,6 @@ h1, h2 {
 }
 
 @media (max-width: 480px) {
-  .cell { font-size: 30px; }
-  .promo-piece { width: 50px; height: 50px; font-size: 36px; }
-  #board { transform: rotateX(3deg); }
+  .cell { font-size: 32px; }
+  .promo-piece { font-size: 36px; }
 }
