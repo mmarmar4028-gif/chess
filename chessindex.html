@@ -4,29 +4,48 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Шахматы</title>
+  <!-- Шрифт с улучшенной читаемостью шахматных символов -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Symbols:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chess.js@0.10.3/chess.min.js"></script>
 </head>
 <body>
-  <!-- Экран выбора режима -->
+  <!-- Меню выбора -->
   <div id="menu" class="screen">
     <h1>Шахматы</h1>
     <button id="localBtn" class="btn">Локальная игра</button>
     <button id="aiBtn" class="btn">Игра с ИИ</button>
   </div>
 
-  <!-- Экран выбора сложности -->
+  <!-- Выбор сложности -->
   <div id="aiMenu" class="screen" style="display: none;">
-    <h2>Выберите сложность</h2>
+    <h2>Сложность ИИ</h2>
     <button class="btn" data-level="1">Лёгкий</button>
-    <button class="btn" data-level="3">Средний</button>
-    <button class="-btn" data-level="5">Сложный</button>
+    <button class="btn" data-level="2">Средний</button>
+    <button class="btn" data-level="3">Сложный</button>
     <button id="backBtn" class="btn-back">← Назад</button>
   </div>
 
-  <!-- Игровое поле -->
+  <!-- Игровой экран -->
   <div id="game" class="screen" style="display: none;">
-    <div id="board"></div>
+    <div id="status">Ход белых</div>
+    <div id="board-container">
+      <div id="board"></div>
+    </div>
     <button id="restartBtn" class="btn-restart">🔄 Новая игра</button>
+  </div>
+
+  <!-- Модальное окно превращения -->
+  <div id="promotionModal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <p>Выберите фигуру:</p>
+      <div class="promotion-options">
+        <div class="promo-piece" data-piece="q">♕</div>
+        <div class="promo-piece" data-piece="r">♖</div>
+        <div class="promo-piece" data-piece="b">♗</div>
+        <div class="promo-piece" data-piece="n">♘</div>
+      </div>
+    </div>
   </div>
 
   <script src="script.js"></script>
